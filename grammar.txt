@@ -1,0 +1,73 @@
+Terminais:
+'begin', 'end', '\$'
+'if', 'else', 'while', 'return', 'int', 'void', 'float'
+'+', '-', '*', '/', '=', '==', '!=', '<', '>', '<=', '>=', '||', '&&', '!'
+';', ',', '(', ')', '{', '}', '[', ']'
+'literals'
+'identifiers'
+
+Não-terminais:
+'Program' → FunctionList
+'FunctionList' → Function FunctionList
+'FunctionList' → ε
+'Function' → TypeSpecifier Indentifier ( ) { Stmts }
+'Stmts' → Stmt ; Stmts
+'Stmts' → ε
+'Stmt' → SimpleStmt
+'Stmt' → Conditional
+'Stmt' → Loop
+'SimpleStmt' → VarDefine
+'SimpleStmt' → Math
+'SimpleStmt' → Logic
+'Conditional' → if ( Expression ) { Stmts } ConditionalElse
+'ConditionalElse' → 'else { Stmts }'
+'ConditionalElse' → ε
+'Loop' → while ( Expression ) { Stmts }
+'VarDefine' → TypeSpecifier Identifier
+
+
+Program         ::= { Function }
+
+Function        ::= Type Identifier "(" [ ParameterList ] ")" "{" { Declaration } { Statement } "}"
+
+ParameterList   ::= Type Identifier { "," Type Identifier }
+
+Declaration     ::= Type Identifier { "," Identifier } ";"
+
+Type            ::= "int" | "float" | "char"
+
+Statement       ::= Block | Assignment | IfStatement | WhileStatement | ReturnStatement | ExpressionStatement
+
+Block           ::= "{" { Statement } "}"
+
+Assignment      ::= Identifier "=" Expression ";"
+
+IfStatement     ::= "if" "(" Condition ")" Statement [ "else" Statement ]
+
+WhileStatement  ::= "while" "(" Condition ")" Statement
+
+ForStatement    ::= "for" "(" [ Expression ] ";" [ Condition ] ";" [ Expression ] ")" Statement
+
+ReturnStatement ::= "return" [ Expression ] ";"
+
+ExpressionStatement ::= Expression ";"
+
+Expression      ::= Term { ( "+" | "-" ) Term }
+
+Term            ::= Factor { ( "*" | "/" | "%" ) Factor }
+
+Factor          ::= Identifier | Literal | "(" Expression ")" | FunctionCall
+
+FunctionCall    ::= Identifier "(" [ ArgumentList ] ")"
+
+ArgumentList    ::= Expression { "," Expression }
+
+Condition       ::= Expression ( "==" | "!=" | "<" | ">" | "<=" | ">=" ) Expression
+
+Identifier      ::= letter { letter | digit }
+Literal         ::= integerLiteral | floatingLiteral | charLiteral | stringLiteral
+
+integerLiteral  ::= digit { digit }
+floatingLiteral ::= digit { digit } "." digit { digit }
+charLiteral     ::= "'" character "'"
+stringLiteral   ::= '"' { character } '"'
