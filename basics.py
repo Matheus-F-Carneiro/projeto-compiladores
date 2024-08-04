@@ -1,3 +1,3 @@
 # Operações básicas da gramática
 
-def Grammar()
+# TODO: def Grammar():
