@@ -1,40 +1,57 @@
 Terminais:
 'begin', 'end', '\$'
-'if', 'else', 'while', 'return', 'int', 'void', 'float'
+'if', 'else', 'while', 'return', 'int', 'void', 'float', 'endif'
 '+', '-', '*', '/', '=', '==', '!=', '<', '>', '<=', '>=', '||', '&&', '!'
 ';', ',', '(', ')', '{', '}', '[', ']'
-'literals'
-'identifiers'
+'literal'
+'identifier'
 
 Não-terminais:
 'Program' → FunctList \$
 'FunctList' → Func FunctList
 'FunctList' → ε
-'Func' → TypeSpec Identif ( ) { Stmts }
+'Func' → TypeFunc indentifier ( ) { Stmts }
 'Stmts' → Stmt ; Stmts
 'Stmts' → ε
 'Stmt' → SimpleStmt
 'Stmt' → Conditional
 'Stmt' → Loop
 'SimpStmt' → VarDefine
-'SimpStmt' → Expr
-'Expr' → Math
-'Expr' → Logic
+'SimpStmt' → Assign
 'CondIf' → if ( Logic ) { Stmts } CondElse endif
 'CondElse' → else { Stmts } 
 'CondElse' → ε
 'Loop' → while ( Logic ) { Stmts }
-'VarDefine' → TypeSpec Identif
-'Math' → Identif = MathExprAdd
-'MathExprAdd' → MathExprAdd AddOp MathExprMult
-'MathExprAdd' → MathExprMult
-'MathExprMult' → MathExprMult MultOp MathExprMult
-'MathExprMult' → Identif
+'VarDefine' → TypeSpec VarId
+'VarId' → identifier
+'VarId' → Assign
+'Assign' → indentifier = Math
+'Assign' → indentifier = Logic
+    TODO: https://stackoverflow.com/questions/23845198/correct-ll1-grammar-for-arithmetic-expressions
+    'Math' → MathCont MathAlt
+    'MathAlt' → AddOp MathCont MathAlt
+    'MathAlt' → ε
+    'MathCont' → Id MathContAlt
+    'MathContAlt' → MultOp MathCont MathContAlt
+    'MathContAlt' → ε
+    
+'Logic' → ( Logic )
+'Logic' → LogicComp LopConec Logic
+'Logic' → LopNeg Logic
+'LogicComp' → Id LopComp Id
+
+'TypeFunc' → TypeSpec
+'TypeFunc' → void
+'TypeSpec' → int
+'TypeSpec' → float
+'TypeSpec' → char
+
+'Id' → literals (0.1, 'C', 100)
+'Id' → indentifier
 'AddOp' → +
 'AddOp' → -
 'MultOp' → *
 'MultOp' → /
-'Logic' → LogicSeq LopComp LogicSeq
 'LopNeg' → !
 'LopConec' → ||
 'LopConec' → &&
@@ -45,70 +62,3 @@ Não-terminais:
 'LopComp' → <=
 'LopComp' → !=
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-]
-Program         ::= { Function }
-
-Function        ::= Type Identifier "(" [ ParameterList ] ")" "{" { Declaration } { Statement } "}"
-
-ParameterList   ::= Type Identifier { "," Type Identifier }
-
-Declaration     ::= Type Identifier { "," Identifier } ";"
-
-Type            ::= "int" | "float" | "char"
-
-Statement       ::= Block | Assignment | IfStatement | WhileStatement | ReturnStatement | ExpressionStatement
-
-Block           ::= "{" { Statement } "}"
-
-Assignment      ::= Identifier "=" Expression ";"
-
-IfStatement     ::= "if" "(" Condition ")" Statement [ "else" Statement ]
-
-WhileStatement  ::= "while" "(" Condition ")" Statement
-
-ForStatement    ::= "for" "(" [ Expression ] ";" [ Condition ] ";" [ Expression ] ")" Statement
-
-ReturnStatement ::= "return" [ Expression ] ";"
-
-ExpressionStatement ::= Expression ";"
-
-Expression      ::= Term { ( "+" | "-" ) Term }
-
-Term            ::= Factor { ( "*" | "/" | "%" ) Factor }
-
-Factor          ::= Identifier | Literal | "(" Expression ")" | FunctionCall
-
-FunctionCall    ::= Identifier "(" [ ArgumentList ] ")"
-
-ArgumentList    ::= Expression { "," Expression }
-
-Condition       ::= Expression ( "==" | "!=" | "<" | ">" | "<=" | ">=" ) Expression
-
-Identifier      ::= letter { letter | digit }
-Literal         ::= integerLiteral | floatingLiteral | charLiteral | stringLiteral
-
-integerLiteral  ::= digit { digit }
-floatingLiteral ::= digit { digit } "." digit { digit }
-charLiteral     ::= "'" character "'"
-stringLiteral   ::= '"' { character } '"'
