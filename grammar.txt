@@ -7,25 +7,66 @@ Terminais:
 'identifiers'
 
 Não-terminais:
-'Program' → FunctionList
-'FunctionList' → Function FunctionList
-'FunctionList' → ε
-'Function' → TypeSpecifier Indentifier ( ) { Stmts }
+'Program' → FunctList \$
+'FunctList' → Func FunctList
+'FunctList' → ε
+'Func' → TypeSpec Identif ( ) { Stmts }
 'Stmts' → Stmt ; Stmts
 'Stmts' → ε
 'Stmt' → SimpleStmt
 'Stmt' → Conditional
 'Stmt' → Loop
-'SimpleStmt' → VarDefine
-'SimpleStmt' → Math
-'SimpleStmt' → Logic
-'Conditional' → if ( Expression ) { Stmts } ConditionalElse
-'ConditionalElse' → 'else { Stmts }'
-'ConditionalElse' → ε
-'Loop' → while ( Expression ) { Stmts }
-'VarDefine' → TypeSpecifier Identifier
+'SimpStmt' → VarDefine
+'SimpStmt' → Expr
+'Expr' → Math
+'Expr' → Logic
+'CondIf' → if ( Logic ) { Stmts } CondElse endif
+'CondElse' → else { Stmts } 
+'CondElse' → ε
+'Loop' → while ( Logic ) { Stmts }
+'VarDefine' → TypeSpec Identif
+'Math' → Identif = MathExprAdd
+'MathExprAdd' → MathExprAdd AddOp MathExprMult
+'MathExprAdd' → MathExprMult
+'MathExprMult' → MathExprMult MultOp MathExprMult
+'MathExprMult' → Identif
+'AddOp' → +
+'AddOp' → -
+'MultOp' → *
+'MultOp' → /
+'Logic' → LogicSeq LopComp LogicSeq
+'LopNeg' → !
+'LopConec' → ||
+'LopConec' → &&
+'LopComp' → ==
+'LopComp' → >
+'LopComp' → <
+'LopComp' → >=
+'LopComp' → <=
+'LopComp' → !=
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+]
 Program         ::= { Function }
 
 Function        ::= Type Identifier "(" [ ParameterList ] ")" "{" { Declaration } { Statement } "}"
