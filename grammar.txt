@@ -1,4 +1,3 @@
-Terminais:
 'begin', 'end', '\$'
 'if', 'else', 'while', 'return', 'int', 'void', 'float', 'endif'
 '+', '-', '*', '/', '=', '==', '!=', '<', '>', '<=', '>=', '||', '&&', '!'
@@ -6,7 +5,6 @@ Terminais:
 'literal'
 'identifier'
 
-Não-terminais:
 'Program' → FunctList \$
 'FunctList' → Func FunctList
 'FunctList' → ε
@@ -27,25 +25,23 @@ Não-terminais:
 'VarId' → Assign
 'Assign' → indentifier = Math
 'Assign' → indentifier = Logic
-    TODO: https://stackoverflow.com/questions/23845198/correct-ll1-grammar-for-arithmetic-expressions
-    'Math' → MathCont MathAlt
-    'MathAlt' → AddOp MathCont MathAlt
-    'MathAlt' → ε
-    'MathCont' → Id MathContAlt
-    'MathContAlt' → MultOp MathCont MathContAlt
-    'MathContAlt' → ε
-    
+'Math'  → MathCont MathAdd
+'MathAdd' → AddOp MathCont MathAdd
+'MathAdd' → ε
+'MathCont'  → MathPar MathMult
+'MathMult' → MultOp MathPar MathMult
+'MathMult' → ε
+'MathPar'  → ( Math )
+'MathPar' → Id    
 'Logic' → ( Logic )
 'Logic' → LogicComp LopConec Logic
 'Logic' → LopNeg Logic
 'LogicComp' → Id LopComp Id
-
 'TypeFunc' → TypeSpec
 'TypeFunc' → void
 'TypeSpec' → int
 'TypeSpec' → float
 'TypeSpec' → char
-
 'Id' → literals (0.1, 'C', 100)
 'Id' → indentifier
 'AddOp' → +
@@ -61,4 +57,3 @@ Não-terminais:
 'LopComp' → >=
 'LopComp' → <=
 'LopComp' → !=
-
