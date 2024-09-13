@@ -94,3 +94,72 @@ def build_productions(fileinput,fileoutput):
             outfile.write(formatted_production + '\n')
 
     print("Complete.")
+
+    
+
+def parse_productions(grammar_file):
+    productions = {}
+    with open(grammar_file, 'r') as file:
+        lines = file.readlines()
+
+    for line in lines:
+        match = re.match(r"G\.add_production\('(\w+)', \[(.*)\]\) *#(\d+)",
+                         line.strip())
+        if match:
+            lhs = match.group(1)
+            rhs = match.group(2).split(', ') if match.group(2) else []
+            prod_number = int(match.group(3))
+
+            if lhs not in productions:
+                productions[lhs] = []
+            productions[lhs].append((rhs, prod_number))
+
+    return productions
+
+def generate_function(lhs, rhs_list):
+    function_lines = []
+    function_lines.append(f"def {lhs}(ts: token_sequence, p: predict_algorithm) -> None:")
+
+    for i, (rhs, prod_number) in enumerate(rhs_list):
+        if i == 0:
+            function_lines.append(f"    if ts.peek() in p.predict({prod_number}):")
+        else:
+            function_lines.append(f"    elif ts.peek() in p.predict({prod_number}):")
+            
+        if rhs:
+            for symbol in rhs:
+                match = re.match(r"'([A-Z][A-Za-z]+)'", symbol)
+                if match:
+                    function_lines.append(f"        {match.group(1)}(ts, p)")
+                else:
+                    function_lines.append(f"        ts.match({symbol})")
+                    
+        else:
+            function_lines.append("        return")
+
+    function_lines.append("")
+    return "\n".join(function_lines)
+
+def write_functions_to_file(productions, output_file):
+    with open(output_file, 'w') as file:
+        for lhs, rhs_list in productions.items():
+            function_code = generate_function(lhs, rhs_list)
+            file.write(function_code)
+            file.write("\n")
+
+
+def add_lines_numbers(fileinput, fileoutput):
+    with open(fileinput, 'r') as file:
+        lines = file.readlines()
+
+    for i in range(0, len(lines)):
+        match = re.match("(.+) #[0-9]+", lines[i])
+        if match:
+            lines[i] = match.group(1) + f" #{i}"
+        else:
+            lines[i] = f"{lines[i].strip()} #{i}"
+
+    with open(fileoutput, 'w') as file:
+        file.write("\n".join(lines))
+
+    
