@@ -556,8 +556,5 @@ if __name__ == '__main__':
         ts = token_sequence(tokens) # type: ignore
         G = create_ac_grammar()
         p_alg = predict_algorithm(G)
-        # print(tokens)    
-        # print(is_ll1(G, p_alg))
-        # print_rec_desc.print_rec_desc(G, "output.txt")
         Program(ts, p_alg)
         print(f"{filepath} works.")
