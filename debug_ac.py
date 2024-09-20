@@ -214,14 +214,18 @@ def lexical_analyzer(filepath) -> str:
     return token_sequence # type: ignore
 
 def Program(ts:token_sequence, p:predict_algorithm) -> None: # type: ignore
+    print("\nProductions for Program:")
+    print(f"{ts.peek()} and {p.predict(73)}")
     if ts.peek() in p.predict(73):
         FunctList(ts,p)
         ts.match("$")
     else:
-        print("Syntax Error in Program")
-        sys.exit(0)
+       print("Syntax Error in Program")
+       sys.exit(0)
 
 def Program(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Program:")
+    print(f"{ts.peek()} and {p.predict(73)}")
     if ts.peek() in p.predict(73):
          FunctList(ts,p)
          ts.match("$")
@@ -230,6 +234,9 @@ def Program(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def FunctList(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for FunctList:")
+    print(f"{ts.peek()} and {p.predict(74)}")
+    print(f"{ts.peek()} and {p.predict(75)}")
     if ts.peek() in p.predict(74):
          Func(ts,p)
          FunctList(ts,p)
@@ -240,6 +247,8 @@ def FunctList(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def Func(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Func:")
+    print(f"{ts.peek()} and {p.predict(76)}")
     if ts.peek() in p.predict(76):
          TypeFunc(ts,p)
          ts.match("main")
@@ -253,6 +262,9 @@ def Func(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def Stmts(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Stmts:")
+    print(f"{ts.peek()} and {p.predict(77)}")
+    print(f"{ts.peek()} and {p.predict(78)}")
     if ts.peek() in p.predict(77):
          Stmt(ts,p)
          Stmts(ts,p)
@@ -263,6 +275,10 @@ def Stmts(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def Stmt(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Stmt:")
+    print(f"{ts.peek()} and {p.predict(79)}")
+    print(f"{ts.peek()} and {p.predict(80)}")
+    print(f"{ts.peek()} and {p.predict(81)}")
     if ts.peek() in p.predict(79):
          SimpleStmt(ts,p)
     elif ts.peek() in p.predict(80):
@@ -274,6 +290,10 @@ def Stmt(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def SimpleStmt(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for SimpleStmt:")
+    print(f"{ts.peek()} and {p.predict(82)}")
+    print(f"{ts.peek()} and {p.predict(83)}")
+    print(f"{ts.peek()} and {p.predict(84)}")
     if ts.peek() in p.predict(82):
          VarDefine(ts,p)
          ts.match("semicolon")
@@ -288,6 +308,8 @@ def SimpleStmt(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def CondIf(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for CondIf:")
+    print(f"{ts.peek()} and {p.predict(85)}")
     if ts.peek() in p.predict(85):
          ts.match("if")
          ts.match("openpara")
@@ -303,6 +325,9 @@ def CondIf(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def CondElse(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for CondElse:")
+    print(f"{ts.peek()} and {p.predict(86)}")
+    print(f"{ts.peek()} and {p.predict(87)}")
     if ts.peek() in p.predict(86):
          ts.match("else")
          ts.match("openbracket")
@@ -315,6 +340,8 @@ def CondElse(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def Loop(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Loop:")
+    print(f"{ts.peek()} and {p.predict(88)}")
     if ts.peek() in p.predict(88):
          ts.match("while")
          ts.match("openpara")
@@ -328,6 +355,8 @@ def Loop(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def VarDefine(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for VarDefine:")
+    print(f"{ts.peek()} and {p.predict(89)}")
     if ts.peek() in p.predict(89):
          TypeSpec(ts,p)
          VarId(ts,p)
@@ -336,6 +365,8 @@ def VarDefine(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def VarId(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for VarId:")
+    print(f"{ts.peek()} and {p.predict(90)}")
     if ts.peek() in p.predict(90):
          ts.match("identifier")
     else:
@@ -343,6 +374,8 @@ def VarId(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def Assign(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Assign:")
+    print(f"{ts.peek()} and {p.predict(91)}")
     if ts.peek() in p.predict(91):
          ts.match("identifier")
          ts.match("assign")
@@ -352,6 +385,8 @@ def Assign(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def Expr(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Expr:")
+    print(f"{ts.peek()} and {p.predict(92)}")
     if ts.peek() in p.predict(92):
          Logic(ts,p)
     else:
@@ -359,6 +394,8 @@ def Expr(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def Math(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Math:")
+    print(f"{ts.peek()} and {p.predict(100)}")
     if ts.peek() in p.predict(100):
          MathCont(ts,p)
          MathAdd(ts,p)
@@ -367,6 +404,9 @@ def Math(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def MathAdd(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for MathAdd:")
+    print(f"{ts.peek()} and {p.predict(101)}")
+    print(f"{ts.peek()} and {p.predict(102)}")
     if ts.peek() in p.predict(101):
          AddOp(ts,p)
          MathCont(ts,p)
@@ -378,6 +418,8 @@ def MathAdd(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def MathCont(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for MathCont:")
+    print(f"{ts.peek()} and {p.predict(103)}")
     if ts.peek() in p.predict(103):
          MathPar(ts,p)
          MathMult(ts,p)
@@ -386,6 +428,9 @@ def MathCont(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def MathMult(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for MathMult:")
+    print(f"{ts.peek()} and {p.predict(104)}")
+    print(f"{ts.peek()} and {p.predict(105)}")
     if ts.peek() in p.predict(104):
          MultOp(ts,p)
          MathPar(ts,p)
@@ -397,6 +442,9 @@ def MathMult(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def MathPar(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for MathPar:")
+    print(f"{ts.peek()} and {p.predict(106)}")
+    print(f"{ts.peek()} and {p.predict(107)}")
     if ts.peek() in p.predict(106):
          ts.match("openpara")
          Expr(ts,p)
@@ -408,6 +456,9 @@ def MathPar(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def Logic(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Logic:")
+    print(f"{ts.peek()} and {p.predict(93)}")
+    print(f"{ts.peek()} and {p.predict(94)}")
     if ts.peek() in p.predict(93):
          LogicComp(ts,p)
          LogicTail(ts,p)
@@ -419,6 +470,9 @@ def Logic(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def LogicTail(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for LogicTail:")
+    print(f"{ts.peek()} and {p.predict(95)}")
+    print(f"{ts.peek()} and {p.predict(96)}")
     if ts.peek() in p.predict(95):
          ConnecOp(ts,p)
          Logic(ts,p)
@@ -429,6 +483,8 @@ def LogicTail(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def LogicComp(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for LogicComp:")
+    print(f"{ts.peek()} and {p.predict(97)}")
     if ts.peek() in p.predict(97):
          Math(ts,p)
          LogicCompTail(ts,p)
@@ -437,6 +493,9 @@ def LogicComp(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def LogicCompTail(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for LogicCompTail:")
+    print(f"{ts.peek()} and {p.predict(98)}")
+    print(f"{ts.peek()} and {p.predict(99)}")
     if ts.peek() in p.predict(98):
         return
     elif ts.peek() in p.predict(99):
@@ -447,6 +506,9 @@ def LogicCompTail(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def TypeFunc(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for TypeFunc:")
+    print(f"{ts.peek()} and {p.predict(109)}")
+    print(f"{ts.peek()} and {p.predict(110)}")
     if ts.peek() in p.predict(109):
          TypeSpec(ts,p)
     elif ts.peek() in p.predict(110):
@@ -456,6 +518,10 @@ def TypeFunc(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def TypeSpec(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for TypeSpec:")
+    print(f"{ts.peek()} and {p.predict(111)}")
+    print(f"{ts.peek()} and {p.predict(112)}")
+    print(f"{ts.peek()} and {p.predict(113)}")
     if ts.peek() in p.predict(111):
          ts.match("intdcl")
     elif ts.peek() in p.predict(112):
@@ -467,6 +533,9 @@ def TypeSpec(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def Id(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Id:")
+    print(f"{ts.peek()} and {p.predict(114)}")
+    print(f"{ts.peek()} and {p.predict(115)}")
     if ts.peek() in p.predict(114):
          Literals(ts,p)
     elif ts.peek() in p.predict(115):
@@ -476,6 +545,9 @@ def Id(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def AddOp(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for AddOp:")
+    print(f"{ts.peek()} and {p.predict(119)}")
+    print(f"{ts.peek()} and {p.predict(120)}")
     if ts.peek() in p.predict(119):
          ts.match("plus")
     elif ts.peek() in p.predict(120):
@@ -485,6 +557,9 @@ def AddOp(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def MultOp(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for MultOp:")
+    print(f"{ts.peek()} and {p.predict(121)}")
+    print(f"{ts.peek()} and {p.predict(122)}")
     if ts.peek() in p.predict(121):
          ts.match("mult")
     elif ts.peek() in p.predict(122):
@@ -494,6 +569,8 @@ def MultOp(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def LopNeg(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for LopNeg:")
+    print(f"{ts.peek()} and {p.predict(123)}")
     if ts.peek() in p.predict(123):
          ts.match("not")
     else:
@@ -501,6 +578,9 @@ def LopNeg(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def ConnecOp(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for ConnecOp:")
+    print(f"{ts.peek()} and {p.predict(124)}")
+    print(f"{ts.peek()} and {p.predict(125)}")
     if ts.peek() in p.predict(124):
          ts.match("or")
     elif ts.peek() in p.predict(125):
@@ -510,6 +590,13 @@ def ConnecOp(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def CompOp(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for CompOp:")
+    print(f"{ts.peek()} and {p.predict(126)}")
+    print(f"{ts.peek()} and {p.predict(127)}")
+    print(f"{ts.peek()} and {p.predict(128)}")
+    print(f"{ts.peek()} and {p.predict(129)}")
+    print(f"{ts.peek()} and {p.predict(130)}")
+    print(f"{ts.peek()} and {p.predict(131)}")
     if ts.peek() in p.predict(126):
          ts.match("equal")
     elif ts.peek() in p.predict(127):
@@ -527,6 +614,8 @@ def CompOp(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def Print(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Print:")
+    print(f"{ts.peek()} and {p.predict(108)}")
     if ts.peek() in p.predict(108):
          ts.match("printf")
          ts.match("openpara")
@@ -537,6 +626,10 @@ def Print(ts:token_sequence, p:predict_algorithm) -> None:
         sys.exit(0)
 
 def Literals(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Literals:")
+    print(f"{ts.peek()} and {p.predict(116)}")
+    print(f"{ts.peek()} and {p.predict(117)}")
+    print(f"{ts.peek()} and {p.predict(118)}")
     if ts.peek() in p.predict(116):
          ts.match("inum")
     elif ts.peek() in p.predict(117):
@@ -550,14 +643,13 @@ def Literals(ts:token_sequence, p:predict_algorithm) -> None:
 
 
 if __name__ == '__main__':
-    filepaths = ['programa.c']
+    filepaths = ['logicop.c']
     for filepath in filepaths:
         tokens = lexical_analyzer('testcodes/' + filepath)
         ts = token_sequence(tokens) # type: ignore
         G = create_ac_grammar()
         p_alg = predict_algorithm(G)
-        # print(tokens)    
-        # print(is_ll1(G, p_alg))
-        # print_rec_desc.print_rec_desc(G, "output.txt")
+        print(tokens)    
+        print(is_ll1(G, p_alg))
+        print_rec_desc.print_rec_desc(G, "output.txt")
         Program(ts, p_alg)
-        print(f"{filepath} works.")
