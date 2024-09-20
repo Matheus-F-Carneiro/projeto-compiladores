@@ -78,6 +78,8 @@ halt = 0
 for comando in program:
   fbr, sp, halt = detect_comando(program, labels, fbr, stack, sp, halt)
   fbr += 1
+  if (halt == 1):
+    break
 
 print(program)
 print(stack)

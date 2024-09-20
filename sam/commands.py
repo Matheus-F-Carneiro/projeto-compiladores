@@ -488,9 +488,15 @@ def input_output(comando, stack, sp):
                              "WRITECH para não-characters.")
     
     else:
-        raise Exception("Erro Fatal: Algo de errado com a função logic, revisar o código.")
+        raise Exception("Erro Fatal: Algo de errado com a função input_output, revisar o código.")
     return sp
 
+def program_control(comando, sp, halt):
+    if comando['Nome'] == 'STOP':
+        halt = 1
+    else:
+        raise Exception("Erro Fatal: Algo de errado com a função input_output, revisar o código.")
+    return sp, halt
 
 def detect_comando(programa, label_transl, fbr, stack, sp, halt):
     if programa[fbr]['Tipo'] == 'Stack Manipulation':
@@ -519,5 +525,6 @@ def detect_comando(programa, label_transl, fbr, stack, sp, halt):
         sp = stack_frame(programa[fbr], fbr, stack, sp)
     elif programa[fbr]['Tipo'] == 'Input/Output':
         sp = input_output(programa[fbr], stack, sp)
-    
+    elif programa[fbr]['Tipo'] == 'Program Control':
+        sp, halt = program_control(programa[fbr], sp, halt)
     return fbr, sp, halt
