@@ -211,9 +211,9 @@ def lexical_analyzer(filepath) -> str:
             print('Lexical error: ', t)
             exit(0)
     token_sequence.append('$') 
-    return token_sequence
+    return token_sequence # type: ignore
 
-def Program(ts:token_sequence, p:predict_algorithm) -> None:
+def Program(ts:token_sequence, p:predict_algorithm) -> None: # type: ignore
     print("\nProductions for Program:")
     print(f"{ts.peek()} and {p.predict(73)}")
     if ts.peek() in p.predict(73):
@@ -646,7 +646,7 @@ if __name__ == '__main__':
     filepaths = ['logicop.c']
     for filepath in filepaths:
         tokens = lexical_analyzer('testcodes/' + filepath)
-        ts = token_sequence(tokens)
+        ts = token_sequence(tokens) # type: ignore
         G = create_ac_grammar()
         p_alg = predict_algorithm(G)
         print(tokens)    
