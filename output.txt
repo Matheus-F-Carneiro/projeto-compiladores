@@ -42,7 +42,6 @@ def Stmts(ts:token_sequence, p:predict_algorithm) -> None:
 	print(f"{ts.peek()} and {p.predict(78)}")
 	if ts.peek() in p.predict(77):
 		 Stmt(ts,p)
-		 ts.match("semicolon")
 		 Stmts(ts,p)
 	elif ts.peek() in p.predict(78):
 		return
@@ -72,10 +71,13 @@ def SimpleStmt(ts:token_sequence, p:predict_algorithm) -> None:
 	print(f"{ts.peek()} and {p.predict(84)}")
 	if ts.peek() in p.predict(82):
 		 VarDefine(ts,p)
+		 ts.match("semicolon")
 	elif ts.peek() in p.predict(83):
 		 Assign(ts,p)
+		 ts.match("semicolon")
 	elif ts.peek() in p.predict(84):
 		 Print(ts,p)
+		 ts.match("semicolon")
 	else:
 		print("Syntax Error in SimpleStmt")
 		sys.exit(0)

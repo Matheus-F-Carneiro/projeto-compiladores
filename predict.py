@@ -1,7 +1,7 @@
-from grammar import Grammar
 from derives_empty_string import derives_empty_string_algorithm
-from follow_operation import follow_algorithm
 from first_operation import first_algorithm
+from follow_operation import follow_algorithm
+from grammar import Grammar
 
 
 class predict_algorithm:

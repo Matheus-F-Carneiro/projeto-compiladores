@@ -1,5 +1,6 @@
 from grammar import Grammar
 
+
 class derives_empty_string_algorithm:
     def __init__(self, G: Grammar) -> None:
         self.__symbol_derives_empty = {}

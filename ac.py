@@ -1,10 +1,11 @@
 import re
+import sys
+
+import print_rec_desc
 from grammar import Grammar
 from ll1_check import is_ll1
-from token_sequence import token_sequence
 from predict import predict_algorithm
-import print_rec_desc
-import sys
+from token_sequence import token_sequence
 
 
 def create_ac_grammar() -> Grammar:
@@ -89,14 +90,14 @@ def create_ac_grammar() -> Grammar:
         'TypeFunc', 'main', 'openpara', 'closepara', 
         'openbracket', 'Stmts', 'closebracket'
     ]) #76
-    G.add_production('Stmts', ['Stmt', 'semicolon', 'Stmts']) #77
+    G.add_production('Stmts', ['Stmt', 'Stmts']) #77
     G.add_production('Stmts', []) #78
     G.add_production('Stmt', ['SimpleStmt']) #79
     G.add_production('Stmt', ['CondIf']) #80
     G.add_production('Stmt', ['Loop']) #81
-    G.add_production('SimpleStmt', ['VarDefine']) #82
-    G.add_production('SimpleStmt', ['Assign']) #83
-    G.add_production('SimpleStmt', ['Print']) #84
+    G.add_production('SimpleStmt', ['VarDefine', 'semicolon']) #82
+    G.add_production('SimpleStmt', ['Assign', 'semicolon']) #83
+    G.add_production('SimpleStmt', ['Print', 'semicolon']) #84
     G.add_production('CondIf', [
         'if', 'openpara', 'Logic', 'closepara', 'openbracket',
         'Stmts', 'closebracket', 'CondElse', 'endif'
@@ -160,6 +161,7 @@ regex_table = {
     r'^printf$': 'printf',
     r'^if$': 'if',
     r'^else$': 'else',
+    r'^endif$': 'endif',
     r'^while$': 'while',
     r'^return$': 'return',
     r'^main$': 'main',
@@ -176,7 +178,7 @@ regex_table = {
     r'^\>=$': 'biggerequal',
     r'^\|\|$': 'or',
     r'^&&$': 'and',
-    r'^\!': 'not',
+    r'^\!$': 'not',
     r'^\;$': 'semicolon',
     r'^\,$': 'comma',
     r'^\($': 'openpara',
@@ -192,23 +194,23 @@ regex_table = {
 }
 
 
-def lexical_analyser(filepath) -> str:
+def lexical_analyzer(filepath) -> str:
     with open(filepath, 'r') as f:
-     token_sequence = []
-     tokens = []
-     for line in f:
-       tokens = tokens + line.split(' ')
-     for t in tokens:
-       found = False
-       for regex, category in regex_table.items():
-          if re.match(regex, t):
-            token_sequence.append(category)
-            found = True
-            break
-       if not found:
-          print('Lexical error: ', t)
-          exit(0)
-    token_sequence.append('$')
+        code = f.read()
+    token_sequence = []
+    token_pattern = r'[a-zA-Z_][a-zA-Z_0-9]*|[0-9]+\.[0-9]+|[0-9]+|==|!=|<=|>=|\|\||&&|[+\-*/%<>=!;,(){}]'
+    tokens = re.findall(token_pattern, code)
+    for t in tokens:
+        found = False
+        for regex, category in regex_table.items():
+            if re.match(regex, t):
+                token_sequence.append(category)
+                found = True
+                break
+        if not found:
+            print('Lexical error: ', t)
+            exit(0)
+    token_sequence.append('$') 
     return token_sequence
 
 def Program(ts:token_sequence, p:predict_algorithm) -> None:
@@ -221,47 +223,56 @@ def Program(ts:token_sequence, p:predict_algorithm) -> None:
        print("Syntax Error in Program")
        sys.exit(0)
 
+def Program(ts:token_sequence, p:predict_algorithm) -> None:
+    print("\nProductions for Program:")
+    print(f"{ts.peek()} and {p.predict(73)}")
+    if ts.peek() in p.predict(73):
+         FunctList(ts,p)
+         ts.match("$")
+    else:
+        print("Syntax Error in Program")
+        sys.exit(0)
+
 def FunctList(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for FunctList:")
     print(f"{ts.peek()} and {p.predict(74)}")
     print(f"{ts.peek()} and {p.predict(75)}")
     if ts.peek() in p.predict(74):
-        Func(ts,p)
-        FunctList(ts,p)
+         Func(ts,p)
+         FunctList(ts,p)
     elif ts.peek() in p.predict(75):
-       return
+        return
     else:
-       print("Syntax Error in FunctList")
-       sys.exit(0)
+        print("Syntax Error in FunctList")
+        sys.exit(0)
 
 def Func(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for Func:")
     print(f"{ts.peek()} and {p.predict(76)}")
     if ts.peek() in p.predict(76):
-        TypeFunc(ts,p)
-        ts.match("main")
-        ts.match("openpara")
-        ts.match("closepara")
-        ts.match("openbracket")
-        Stmts(ts,p)
-        ts.match("closebracket")
+         TypeFunc(ts,p)
+         ts.match("main")
+         ts.match("openpara")
+         ts.match("closepara")
+         ts.match("openbracket")
+         Stmts(ts,p)
+         ts.match("closebracket")
     else:
-       print("Syntax Error in Func")
-       sys.exit(0)
+        print("Syntax Error in Func")
+        sys.exit(0)
 
 def Stmts(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for Stmts:")
     print(f"{ts.peek()} and {p.predict(77)}")
     print(f"{ts.peek()} and {p.predict(78)}")
     if ts.peek() in p.predict(77):
-        Stmt(ts,p)
-        ts.match("semicolon")
-        Stmts(ts,p)
+         Stmt(ts,p)
+         Stmts(ts,p)
     elif ts.peek() in p.predict(78):
-       return
+        return
     else:
-       print("Syntax Error in Stmts")
-       sys.exit(0)
+        print("Syntax Error in Stmts")
+        sys.exit(0)
 
 def Stmt(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for Stmt:")
@@ -269,14 +280,14 @@ def Stmt(ts:token_sequence, p:predict_algorithm) -> None:
     print(f"{ts.peek()} and {p.predict(80)}")
     print(f"{ts.peek()} and {p.predict(81)}")
     if ts.peek() in p.predict(79):
-        SimpleStmt(ts,p)
+         SimpleStmt(ts,p)
     elif ts.peek() in p.predict(80):
-        CondIf(ts,p)
+         CondIf(ts,p)
     elif ts.peek() in p.predict(81):
-        Loop(ts,p)
+         Loop(ts,p)
     else:
-       print("Syntax Error in Stmt")
-       sys.exit(0)
+        print("Syntax Error in Stmt")
+        sys.exit(0)
 
 def SimpleStmt(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for SimpleStmt:")
@@ -284,224 +295,227 @@ def SimpleStmt(ts:token_sequence, p:predict_algorithm) -> None:
     print(f"{ts.peek()} and {p.predict(83)}")
     print(f"{ts.peek()} and {p.predict(84)}")
     if ts.peek() in p.predict(82):
-        VarDefine(ts,p)
+         VarDefine(ts,p)
+         ts.match("semicolon")
     elif ts.peek() in p.predict(83):
-        Assign(ts,p)
+         Assign(ts,p)
+         ts.match("semicolon")
     elif ts.peek() in p.predict(84):
-        Print(ts,p)
+         Print(ts,p)
+         ts.match("semicolon")
     else:
-       print("Syntax Error in SimpleStmt")
-       sys.exit(0)
+        print("Syntax Error in SimpleStmt")
+        sys.exit(0)
 
 def CondIf(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for CondIf:")
     print(f"{ts.peek()} and {p.predict(85)}")
     if ts.peek() in p.predict(85):
-        ts.match("if")
-        ts.match("openpara")
-        Logic(ts,p)
-        ts.match("closepara")
-        ts.match("openbracket")
-        Stmts(ts,p)
-        ts.match("closebracket")
-        CondElse(ts,p)
-        ts.match("endif")
+         ts.match("if")
+         ts.match("openpara")
+         Logic(ts,p)
+         ts.match("closepara")
+         ts.match("openbracket")
+         Stmts(ts,p)
+         ts.match("closebracket")
+         CondElse(ts,p)
+         ts.match("endif")
     else:
-       print("Syntax Error in CondIf")
-       sys.exit(0)
+        print("Syntax Error in CondIf")
+        sys.exit(0)
 
 def CondElse(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for CondElse:")
     print(f"{ts.peek()} and {p.predict(86)}")
     print(f"{ts.peek()} and {p.predict(87)}")
     if ts.peek() in p.predict(86):
-        ts.match("else")
-        ts.match("openbracket")
-        Stmts(ts,p)
-        ts.match("closebracket")
+         ts.match("else")
+         ts.match("openbracket")
+         Stmts(ts,p)
+         ts.match("closebracket")
     elif ts.peek() in p.predict(87):
-       return
+        return
     else:
-       print("Syntax Error in CondElse")
-       sys.exit(0)
+        print("Syntax Error in CondElse")
+        sys.exit(0)
 
 def Loop(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for Loop:")
     print(f"{ts.peek()} and {p.predict(88)}")
     if ts.peek() in p.predict(88):
-        ts.match("while")
-        ts.match("openpara")
-        Logic(ts,p)
-        ts.match("closepara")
-        ts.match("openbracket")
-        Stmts(ts,p)
-        ts.match("closebracket")
+         ts.match("while")
+         ts.match("openpara")
+         Logic(ts,p)
+         ts.match("closepara")
+         ts.match("openbracket")
+         Stmts(ts,p)
+         ts.match("closebracket")
     else:
-       print("Syntax Error in Loop")
-       sys.exit(0)
+        print("Syntax Error in Loop")
+        sys.exit(0)
 
 def VarDefine(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for VarDefine:")
     print(f"{ts.peek()} and {p.predict(89)}")
     if ts.peek() in p.predict(89):
-        TypeSpec(ts,p)
-        VarId(ts,p)
+         TypeSpec(ts,p)
+         VarId(ts,p)
     else:
-       print("Syntax Error in VarDefine")
-       sys.exit(0)
+        print("Syntax Error in VarDefine")
+        sys.exit(0)
 
 def VarId(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for VarId:")
     print(f"{ts.peek()} and {p.predict(90)}")
     if ts.peek() in p.predict(90):
-        ts.match("identifier")
+         ts.match("identifier")
     else:
-       print("Syntax Error in VarId")
-       sys.exit(0)
+        print("Syntax Error in VarId")
+        sys.exit(0)
 
 def Assign(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for Assign:")
     print(f"{ts.peek()} and {p.predict(91)}")
     if ts.peek() in p.predict(91):
-        ts.match("identifier")
-        ts.match("assign")
-        Expr(ts,p)
+         ts.match("identifier")
+         ts.match("assign")
+         Expr(ts,p)
     else:
-       print("Syntax Error in Assign")
-       sys.exit(0)
+        print("Syntax Error in Assign")
+        sys.exit(0)
 
 def Expr(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for Expr:")
     print(f"{ts.peek()} and {p.predict(92)}")
     if ts.peek() in p.predict(92):
-        Logic(ts,p)
+         Logic(ts,p)
     else:
-       print("Syntax Error in Expr")
-       sys.exit(0)
+        print("Syntax Error in Expr")
+        sys.exit(0)
 
 def Math(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for Math:")
     print(f"{ts.peek()} and {p.predict(100)}")
     if ts.peek() in p.predict(100):
-        MathCont(ts,p)
-        MathAdd(ts,p)
+         MathCont(ts,p)
+         MathAdd(ts,p)
     else:
-       print("Syntax Error in Math")
-       sys.exit(0)
+        print("Syntax Error in Math")
+        sys.exit(0)
 
 def MathAdd(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for MathAdd:")
     print(f"{ts.peek()} and {p.predict(101)}")
     print(f"{ts.peek()} and {p.predict(102)}")
     if ts.peek() in p.predict(101):
-        AddOp(ts,p)
-        MathCont(ts,p)
-        MathAdd(ts,p)
+         AddOp(ts,p)
+         MathCont(ts,p)
+         MathAdd(ts,p)
     elif ts.peek() in p.predict(102):
-       return
+        return
     else:
-       print("Syntax Error in MathAdd")
-       sys.exit(0)
+        print("Syntax Error in MathAdd")
+        sys.exit(0)
 
 def MathCont(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for MathCont:")
     print(f"{ts.peek()} and {p.predict(103)}")
     if ts.peek() in p.predict(103):
-        MathPar(ts,p)
-        MathMult(ts,p)
+         MathPar(ts,p)
+         MathMult(ts,p)
     else:
-       print("Syntax Error in MathCont")
-       sys.exit(0)
+        print("Syntax Error in MathCont")
+        sys.exit(0)
 
 def MathMult(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for MathMult:")
     print(f"{ts.peek()} and {p.predict(104)}")
     print(f"{ts.peek()} and {p.predict(105)}")
     if ts.peek() in p.predict(104):
-        MultOp(ts,p)
-        MathPar(ts,p)
-        MathMult(ts,p)
+         MultOp(ts,p)
+         MathPar(ts,p)
+         MathMult(ts,p)
     elif ts.peek() in p.predict(105):
-       return
+        return
     else:
-       print("Syntax Error in MathMult")
-       sys.exit(0)
+        print("Syntax Error in MathMult")
+        sys.exit(0)
 
 def MathPar(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for MathPar:")
     print(f"{ts.peek()} and {p.predict(106)}")
     print(f"{ts.peek()} and {p.predict(107)}")
     if ts.peek() in p.predict(106):
-        ts.match("openpara")
-        Expr(ts,p)
-        ts.match("closepara")
+         ts.match("openpara")
+         Expr(ts,p)
+         ts.match("closepara")
     elif ts.peek() in p.predict(107):
-        Id(ts,p)
+         Id(ts,p)
     else:
-       print("Syntax Error in MathPar")
-       sys.exit(0)
+        print("Syntax Error in MathPar")
+        sys.exit(0)
 
 def Logic(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for Logic:")
     print(f"{ts.peek()} and {p.predict(93)}")
     print(f"{ts.peek()} and {p.predict(94)}")
     if ts.peek() in p.predict(93):
-        LogicComp(ts,p)
-        LogicTail(ts,p)
+         LogicComp(ts,p)
+         LogicTail(ts,p)
     elif ts.peek() in p.predict(94):
-        LopNeg(ts,p)
-        Logic(ts,p)
+         LopNeg(ts,p)
+         Logic(ts,p)
     else:
-       print("Syntax Error in Logic")
-       sys.exit(0)
+        print("Syntax Error in Logic")
+        sys.exit(0)
 
 def LogicTail(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for LogicTail:")
     print(f"{ts.peek()} and {p.predict(95)}")
     print(f"{ts.peek()} and {p.predict(96)}")
     if ts.peek() in p.predict(95):
-        ConnecOp(ts,p)
-        Logic(ts,p)
+         ConnecOp(ts,p)
+         Logic(ts,p)
     elif ts.peek() in p.predict(96):
-       return
+        return
     else:
-       print("Syntax Error in LogicTail")
-       sys.exit(0)
+        print("Syntax Error in LogicTail")
+        sys.exit(0)
 
 def LogicComp(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for LogicComp:")
     print(f"{ts.peek()} and {p.predict(97)}")
     if ts.peek() in p.predict(97):
-        Math(ts,p)
-        LogicCompTail(ts,p)
+         Math(ts,p)
+         LogicCompTail(ts,p)
     else:
-       print("Syntax Error in LogicComp")
-       sys.exit(0)
+        print("Syntax Error in LogicComp")
+        sys.exit(0)
 
 def LogicCompTail(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for LogicCompTail:")
     print(f"{ts.peek()} and {p.predict(98)}")
     print(f"{ts.peek()} and {p.predict(99)}")
     if ts.peek() in p.predict(98):
-       return
+        return
     elif ts.peek() in p.predict(99):
-        CompOp(ts,p)
-        Math(ts,p)
+         CompOp(ts,p)
+         Math(ts,p)
     else:
-       print("Syntax Error in LogicCompTail")
-       sys.exit(0)
+        print("Syntax Error in LogicCompTail")
+        sys.exit(0)
 
 def TypeFunc(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for TypeFunc:")
     print(f"{ts.peek()} and {p.predict(109)}")
     print(f"{ts.peek()} and {p.predict(110)}")
     if ts.peek() in p.predict(109):
-        TypeSpec(ts,p)
+         TypeSpec(ts,p)
     elif ts.peek() in p.predict(110):
-        ts.match("void")
+         ts.match("void")
     else:
-       print("Syntax Error in TypeFunc")
-       sys.exit(0)
+        print("Syntax Error in TypeFunc")
+        sys.exit(0)
 
 def TypeSpec(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for TypeSpec:")
@@ -509,71 +523,71 @@ def TypeSpec(ts:token_sequence, p:predict_algorithm) -> None:
     print(f"{ts.peek()} and {p.predict(112)}")
     print(f"{ts.peek()} and {p.predict(113)}")
     if ts.peek() in p.predict(111):
-        ts.match("intdcl")
+         ts.match("intdcl")
     elif ts.peek() in p.predict(112):
-        ts.match("floatdcl")
+         ts.match("floatdcl")
     elif ts.peek() in p.predict(113):
-        ts.match("chardcl")
+         ts.match("chardcl")
     else:
-       print("Syntax Error in TypeSpec")
-       sys.exit(0)
+        print("Syntax Error in TypeSpec")
+        sys.exit(0)
 
 def Id(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for Id:")
     print(f"{ts.peek()} and {p.predict(114)}")
     print(f"{ts.peek()} and {p.predict(115)}")
     if ts.peek() in p.predict(114):
-        Literals(ts,p)
+         Literals(ts,p)
     elif ts.peek() in p.predict(115):
-        ts.match("identifier")
+         ts.match("identifier")
     else:
-       print("Syntax Error in Id")
-       sys.exit(0)
+        print("Syntax Error in Id")
+        sys.exit(0)
 
 def AddOp(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for AddOp:")
     print(f"{ts.peek()} and {p.predict(119)}")
     print(f"{ts.peek()} and {p.predict(120)}")
     if ts.peek() in p.predict(119):
-        ts.match("plus")
+         ts.match("plus")
     elif ts.peek() in p.predict(120):
-        ts.match("minus")
+         ts.match("minus")
     else:
-       print("Syntax Error in AddOp")
-       sys.exit(0)
+        print("Syntax Error in AddOp")
+        sys.exit(0)
 
 def MultOp(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for MultOp:")
     print(f"{ts.peek()} and {p.predict(121)}")
     print(f"{ts.peek()} and {p.predict(122)}")
     if ts.peek() in p.predict(121):
-        ts.match("mult")
+         ts.match("mult")
     elif ts.peek() in p.predict(122):
-        ts.match("div")
+         ts.match("div")
     else:
-       print("Syntax Error in MultOp")
-       sys.exit(0)
+        print("Syntax Error in MultOp")
+        sys.exit(0)
 
 def LopNeg(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for LopNeg:")
     print(f"{ts.peek()} and {p.predict(123)}")
     if ts.peek() in p.predict(123):
-        ts.match("not")
+         ts.match("not")
     else:
-       print("Syntax Error in LopNeg")
-       sys.exit(0)
+        print("Syntax Error in LopNeg")
+        sys.exit(0)
 
 def ConnecOp(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for ConnecOp:")
     print(f"{ts.peek()} and {p.predict(124)}")
     print(f"{ts.peek()} and {p.predict(125)}")
     if ts.peek() in p.predict(124):
-        ts.match("or")
+         ts.match("or")
     elif ts.peek() in p.predict(125):
-        ts.match("and")
+         ts.match("and")
     else:
-       print("Syntax Error in ConnecOp")
-       sys.exit(0)
+        print("Syntax Error in ConnecOp")
+        sys.exit(0)
 
 def CompOp(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for CompOp:")
@@ -584,32 +598,32 @@ def CompOp(ts:token_sequence, p:predict_algorithm) -> None:
     print(f"{ts.peek()} and {p.predict(130)}")
     print(f"{ts.peek()} and {p.predict(131)}")
     if ts.peek() in p.predict(126):
-        ts.match("equal")
+         ts.match("equal")
     elif ts.peek() in p.predict(127):
-        ts.match("biggerthan")
+         ts.match("biggerthan")
     elif ts.peek() in p.predict(128):
-        ts.match("smallerthan")
+         ts.match("smallerthan")
     elif ts.peek() in p.predict(129):
-        ts.match("biggerequal")
+         ts.match("biggerequal")
     elif ts.peek() in p.predict(130):
-        ts.match("smallerequal")
+         ts.match("smallerequal")
     elif ts.peek() in p.predict(131):
-        ts.match("diff")
+         ts.match("diff")
     else:
-       print("Syntax Error in CompOp")
-       sys.exit(0)
+        print("Syntax Error in CompOp")
+        sys.exit(0)
 
 def Print(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for Print:")
     print(f"{ts.peek()} and {p.predict(108)}")
     if ts.peek() in p.predict(108):
-        ts.match("printf")
-        ts.match("openpara")
-        Id(ts,p)
-        ts.match("closepara")
+         ts.match("printf")
+         ts.match("openpara")
+         Id(ts,p)
+         ts.match("closepara")
     else:
-       print("Syntax Error in Print")
-       sys.exit(0)
+        print("Syntax Error in Print")
+        sys.exit(0)
 
 def Literals(ts:token_sequence, p:predict_algorithm) -> None:
     print("\nProductions for Literals:")
@@ -617,22 +631,25 @@ def Literals(ts:token_sequence, p:predict_algorithm) -> None:
     print(f"{ts.peek()} and {p.predict(117)}")
     print(f"{ts.peek()} and {p.predict(118)}")
     if ts.peek() in p.predict(116):
-        ts.match("inum")
+         ts.match("inum")
     elif ts.peek() in p.predict(117):
-        ts.match("fnum")
+         ts.match("fnum")
     elif ts.peek() in p.predict(118):
-        ts.match("cchar")
+         ts.match("cchar")
     else:
-       print("Syntax Error in Literals")
-       sys.exit(0)
+        print("Syntax Error in Literals")
+        sys.exit(0)
+
+
 
 if __name__ == '__main__':
-    filepath = 'programa.c'
-    tokens = lexical_analyser(filepath)
-    ts = token_sequence(tokens)
-    G = create_ac_grammar()
-    p_alg = predict_algorithm(G)
-    print(tokens)    
-    print(is_ll1(G, p_alg))
-    print_rec_desc.print_rec_desc(G, "output.txt")
-    Program(ts, p_alg)
+    filepaths = ['logicop.c']
+    for filepath in filepaths:
+        tokens = lexical_analyzer('testcodes/' + filepath)
+        ts = token_sequence(tokens)
+        G = create_ac_grammar()
+        p_alg = predict_algorithm(G)
+        print(tokens)    
+        print(is_ll1(G, p_alg))
+        print_rec_desc.print_rec_desc(G, "output.txt")
+        Program(ts, p_alg)
